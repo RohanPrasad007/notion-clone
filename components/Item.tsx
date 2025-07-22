@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { archiveDocumentRecursive, createDocument } from "@/lib/db/Document";
-import { Router } from "next/router";
 import { toast } from "sonner";
 import {
   DropdownMenu,

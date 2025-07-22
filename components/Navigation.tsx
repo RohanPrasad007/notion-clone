@@ -12,7 +12,7 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { ElementRef, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./UserItem";
-import { createDocument, useUserDocuments } from "@/lib/db/Document";
+import { createDocument } from "@/lib/db/Document";
 import Item from "./Item";
 import { toast } from "sonner";
 import DocumentList from "./DocumentList";
@@ -37,13 +37,31 @@ function Navigation() {
   const { open } = useSearch();
   const settings = userSettings();
 
+  const resetWidth = () => {
+    if (sidebarRef.current && navbarRef.current) {
+      setIsCollapsed(false);
+      setIsResetting(true);
+
+      sidebarRef.current.style.width = isMobile
+        ? "calc(100% - 240px)"
+        : "240px";
+      navbarRef.current.style.setProperty(
+        "width",
+        isMobile ? "0" : "calc(100% - 200px)"
+      );
+      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "200px");
+
+      setTimeout(() => setIsResetting(false), 300);
+    }
+  };
+
   useEffect(() => {
     if (isMobile) {
       collapse();
     } else {
       resetWidth();
     }
-  }, [isMobile]);
+  }, [isMobile, resetWidth]);
 
   useEffect(() => {
     if (isMobile) {
@@ -82,24 +100,6 @@ function Navigation() {
     isResizingRef.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-  };
-
-  const resetWidth = () => {
-    if (sidebarRef.current && navbarRef.current) {
-      setIsCollapsed(false);
-      setIsResetting(true);
-
-      sidebarRef.current.style.width = isMobile
-        ? "calc(100% - 240px)"
-        : "240px";
-      navbarRef.current.style.setProperty(
-        "width",
-        isMobile ? "0" : "calc(100% - 200px)"
-      );
-      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "200px");
-
-      setTimeout(() => setIsResetting(false), 300);
-    }
   };
 
   const collapse = () => {

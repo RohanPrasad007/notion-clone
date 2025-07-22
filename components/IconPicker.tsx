@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import React, { useState, useCallback } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Theme } from "emoji-picker-react";
+import { EmojiClickData, Theme } from "emoji-picker-react";
 
 const EmojiPicker = React.lazy(() => import("emoji-picker-react"));
 
@@ -27,7 +27,7 @@ function IconPicker({ onChange, children, asChild }: IconPickerProps) {
   const theme = themeMap[currentTheme];
 
   const handleEmojiClick = useCallback(
-    (data: any) => {
+    (data: EmojiClickData) => {
       onChange(data.emoji);
       setIsOpen(false);
     },

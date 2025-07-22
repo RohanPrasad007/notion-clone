@@ -71,9 +71,14 @@ function Title({ initialData }: TitleProps) {
     </div>
   );
 }
+Title.displayName = "Title";
 
-Title.Skeleton = () => {
+const TitleSkeleton = () => {
   return <Skeleton className="h-9 w-20 rounded-md" />;
 };
+
+TitleSkeleton.displayName = "Title.Skeleton";
+
+Title.Skeleton = TitleSkeleton;
 
 export default Title;

@@ -1,46 +1,18 @@
-import React, { useState, useRef, ChangeEvent, DragEvent } from "react";
-import { Upload, X, Image, Loader2 } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { uploadCover } from "@/lib/db/Document";
 import { useParams } from "next/navigation";
 import { useCoverImage } from "@/hooks/useCoverImage";
 
 const UploadCoverImage = () => {
-  const [dragActive, setDragActive] = useState<boolean>(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const params = useParams();
   const coverImage = useCoverImage();
   const documentId = params.documentId as string;
-
-  const handleDrag = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
-    }
-  };
 
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -70,20 +42,15 @@ const UploadCoverImage = () => {
       }
     } catch (error) {
       toast.error("Failed to upload cover image");
+      console.error("Failed to upload cover image", error);
       setUploadedImage(null);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const removeImage = () => {
-    setUploadedImage(null);
-  };
-
   const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current?.click();
   };
 
   return (
@@ -93,7 +60,7 @@ const UploadCoverImage = () => {
           <div className="relative group">
             <img
               src={uploadedImage}
-              alt="Uploaded cover"
+              alt="Uploaded cover preview"
               className="w-full h-64 object-cover rounded-lg border-2 border-gray-200"
             />
             {isUploading && (
@@ -109,20 +76,17 @@ const UploadCoverImage = () => {
           </div>
         ) : (
           <div
-            className={`
-              border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
-            `}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
+            className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200 hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
             onClick={handleClick}
             role="button"
             tabIndex={0}
           >
             <div className="flex flex-col items-center space-y-4">
-              <div className="p-4 bg-gray-100 rounded-full">
-                <Upload size={32} className="text-gray-600" />
+              <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-full">
+                <Upload
+                  size={32}
+                  className="text-gray-600 dark:text-gray-300"
+                />
               </div>
               <div>
                 <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -135,10 +99,9 @@ const UploadCoverImage = () => {
 
         <input
           ref={fileInputRef}
-          id="fileInput"
           type="file"
           accept="image/*"
-          onChange={handleFileInput}
+          onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
           className="hidden"
         />
       </div>

@@ -58,8 +58,12 @@ function Menu({ documentId }: MenuPromps) {
   );
 }
 
-Menu.Skeleton = () => {
+Menu.displayName = "Menu";
+
+const MenuSkeleton = () => {
   return <Skeleton className="h-10 w-10" />;
 };
 
+MenuSkeleton.displayName = "Menu.Skeleton";
+Menu.Skeleton = MenuSkeleton;
 export default Menu;
