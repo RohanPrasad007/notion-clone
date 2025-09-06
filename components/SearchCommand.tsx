@@ -3,7 +3,7 @@ import { useAuth } from "@/context/UserAuthContext";
 import useSearch from "@/hooks/useSearch";
 import { useSearchDocuments } from "@/lib/db/Document";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   CommandDialog,
   CommandEmpty,
