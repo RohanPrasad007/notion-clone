@@ -18,15 +18,15 @@ function SearchCommand() {
   const { user } = useAuth();
   const router = useRouter();
   const { documents } = useSearchDocuments();
-  const [isMounted, setIsMounted] = useState(false);
+  // const [isMounted, setIsMounted] = useState(false);
 
   const toggle = useSearch((store) => store.toggle);
   const isOpen = useSearch((store) => store.isOpen);
   const onClose = useSearch((store) => store.close);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -44,9 +44,9 @@ function SearchCommand() {
     onClose();
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  // if (!isMounted) {
+  //   return null;
+  // }
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
