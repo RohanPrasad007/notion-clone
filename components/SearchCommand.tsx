@@ -13,11 +13,13 @@ import {
   CommandList,
 } from "./ui/command";
 import { File } from "lucide-react";
+import { useThemeVars } from "@/hooks/use-theme-vars";
 
 function SearchCommand() {
   const { user } = useAuth();
   const router = useRouter();
   const { documents } = useSearchDocuments();
+  const themeVars = useThemeVars();
   // const [isMounted, setIsMounted] = useState(false);
 
   const toggle = useSearch((store) => store.toggle);
@@ -49,7 +51,11 @@ function SearchCommand() {
   // }
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={onClose}>
+    <CommandDialog
+      open={isOpen}
+      onOpenChange={onClose}
+      dialogContentProps={{ style: themeVars }}
+    >
       <CommandInput placeholder={`Search ${user?.displayName}'s Notion...`} />
       <CommandList>
         <CommandEmpty>No result found</CommandEmpty>
