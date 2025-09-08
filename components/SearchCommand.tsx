@@ -3,7 +3,7 @@ import { useAuth } from "@/context/UserAuthContext";
 import useSearch from "@/hooks/useSearch";
 import { useSearchDocuments } from "@/lib/db/Document";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -13,22 +13,20 @@ import {
   CommandList,
 } from "./ui/command";
 import { File } from "lucide-react";
-import { useThemeVars } from "@/hooks/use-theme-vars";
 
 function SearchCommand() {
   const { user } = useAuth();
   const router = useRouter();
   const { documents } = useSearchDocuments();
-  const themeVars = useThemeVars();
-  // const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const toggle = useSearch((store) => store.toggle);
   const isOpen = useSearch((store) => store.isOpen);
   const onClose = useSearch((store) => store.close);
 
-  // useEffect(() => {
-  //   setIsMounted(true);
-  // }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -46,16 +44,12 @@ function SearchCommand() {
     onClose();
   };
 
-  // if (!isMounted) {
-  //   return null;
-  // }
+  if (!isMounted) {
+    return null;
+  }
 
   return (
-    <CommandDialog
-      open={isOpen}
-      onOpenChange={onClose}
-      dialogContentProps={{ style: themeVars }}
-    >
+    <CommandDialog open={isOpen} onOpenChange={onClose}>
       <CommandInput placeholder={`Search ${user?.displayName}'s Notion...`} />
       <CommandList>
         <CommandEmpty>No result found</CommandEmpty>

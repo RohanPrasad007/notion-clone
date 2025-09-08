@@ -9,7 +9,13 @@ import {
   Trash,
 } from "lucide-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import React, { ElementRef, useEffect, useRef, useState } from "react";
+import React, {
+  ElementRef,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useMediaQuery } from "usehooks-ts";
 import UserItem from "./UserItem";
 import { createDocument } from "@/lib/db/Document";
@@ -37,37 +43,52 @@ function Navigation() {
   const { open } = useSearch();
   const settings = userSettings();
 
-  const resetWidth = () => {
+  // Use useCallback to memoize functions
+  const resetWidth = useCallback(() => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = isMobile
-        ? "calc(100% - 240px)"
-        : "240px";
+      sidebarRef.current.style.width = isMobile ? "100%" : "240px";
       navbarRef.current.style.setProperty(
         "width",
-        isMobile ? "0" : "calc(100% - 200px)"
+        isMobile ? "0" : "calc(100% - 240px)"
       );
-      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "200px");
+      navbarRef.current.style.setProperty("left", isMobile ? "100%" : "240px");
 
       setTimeout(() => setIsResetting(false), 300);
     }
-  };
+  }, [isMobile]);
 
+  const collapse = useCallback(() => {
+    if (sidebarRef.current && navbarRef.current) {
+      setIsCollapsed(true);
+      setIsResetting(true);
+
+      sidebarRef.current.style.width = "0";
+      navbarRef.current.style.setProperty("width", "100%");
+      navbarRef.current.style.setProperty("left", "0");
+
+      setTimeout(() => setIsResetting(false), 300);
+    }
+  }, []);
+
+  // Handle initial state and mobile changes
   useEffect(() => {
     if (isMobile) {
       collapse();
     } else {
       resetWidth();
     }
-  }, [isMobile, resetWidth]);
+  }, [isMobile, collapse, resetWidth]);
 
+  // Collapse sidebar when navigating on mobile
   useEffect(() => {
     if (isMobile) {
       collapse();
     }
-  }, [pathname, isMobile]);
+  }, [pathname, isMobile, collapse]);
+
   const handleMouseDown = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -102,21 +123,6 @@ function Navigation() {
     document.removeEventListener("mouseup", handleMouseUp);
   };
 
-  const collapse = () => {
-    if (sidebarRef.current && navbarRef.current) {
-      console.log("This collage is callded");
-
-      setIsCollapsed(true);
-      setIsResetting(true);
-
-      sidebarRef.current.style.width = "0";
-      navbarRef.current.style.setProperty("width", "100%");
-      navbarRef.current.style.setProperty("left", "0");
-
-      setTimeout(() => setIsResetting(false), 300);
-    }
-  };
-
   const createNewDocument = () => {
     const promise = createDocument("untitled").then((result) => {
       if (result.success) {
@@ -130,12 +136,13 @@ function Navigation() {
       error: "Failed to create a new note",
     });
   };
+
   return (
     <>
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/sidebar h-full bg-secndary overflow-y-auto relative flex w-60 flex-col z-[999]",
+          "group/sidebar h-full bg-secondary overflow-y-auto relative flex w-60 flex-col z-[999]",
           isResetting && "transition-all ease-in-out duration-300",
           isMobile && "w-0"
         )}
@@ -185,7 +192,8 @@ function Navigation() {
         ref={navbarRef}
         className={cn(
           "absolute top-0 z-[9999] left-60 w-[calc(100%-240px)]",
-          isResetting && "transition-all ease-in-out duration-300"
+          isResetting && "transition-all ease-in-out duration-300",
+          isCollapsed && "left-0 w-full"
         )}
       >
         {!!params.documentId ? (
